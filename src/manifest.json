@@ -1,22 +1,15 @@
 {
-    "name": "Semaphore Rebuild Pipeline Command",
-    "version": "1.0",
-    "manifest_version": 3,
-    "icons": {
-        "16": "assets/icon.png",
-        "48": "assets/icon.png",
-        "128": "assets/icon.png"
-    },
-    "background": {
-        "service_worker": "js/background.js"
-    },   
-    "permissions": ["activeTab", "scripting"],
-    "action": {},
-    "commands": {
-      "_execute_action": {
-        "suggested_key": {
-          "mac": "MacCtrl+Command+R"
-        }
-      }
-    }
+  "name": "Semaphore Pipeline Rebuild",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_title": "Click to rebuild pipeline",
+    "default_icon": "assets/icon-gray.png",
+    "default_popup": "popup.html"      
+  },
+  "permissions": ["activeTab", "scripting", "tabs", "declarativeContent", "storage"],
+  "options_page": "options.html",
+  "background": {
+    "service_worker": "js/background.js" 
   }
+}
