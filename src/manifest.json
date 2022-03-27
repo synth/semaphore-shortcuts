@@ -7,8 +7,7 @@
   },
   "action": {
     "default_title": "Click to rebuild pipeline",
-    "default_icon": "assets/icon-gray.png",
-    "default_popup": "popup.html"      
+    "default_icon": "assets/icon-gray.png"
   },
   "permissions": ["activeTab", "scripting", "tabs", "declarativeContent", "storage"],
   "options_page": "options.html",

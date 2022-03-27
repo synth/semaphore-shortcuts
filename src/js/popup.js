@@ -28,6 +28,7 @@ async function runPipelineRebuild(apiToken) {
 }
 
 async function makePipelineRebuildRequest(url, token) {
+  console.log("Making pipeline rebuild request");
   fetch(url, {
     method: 'POST',
     headers: {
@@ -62,8 +63,10 @@ async function getTabUrl() {
 }
 
 function createUUID() {
-   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-   });
+  console.log("Creating UUID")
+  //  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+  //     var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+  //     return v.toString(16);
+  //  });
+  return new Date().getTime();
 }

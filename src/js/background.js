@@ -1,9 +1,15 @@
-// chrome.action.onClicked.addListener((tab) => {
-//   chrome.scripting.executeScript({
-//     target: {tabId: tab.id},
-//     files: ['content.js']
-//   });
-// });
+css = '.toastify{padding:12px 20px;color:#fff;display:inline-block;box-shadow:0 3px 6px -1px rgba(0,0,0,.12),0 10px 36px -4px rgba(77,96,232,.3);background:-webkit-linear-gradient(315deg,#73a5ff,#5477f5);background:linear-gradient(135deg,#73a5ff,#5477f5);position:fixed;opacity:0;transition:all .4s cubic-bezier(.215,.61,.355,1);border-radius:2px;cursor:pointer;text-decoration:none;max-width:calc(50% - 20px);z-index:2147483647}.toastify.on{opacity:1}.toast-close{opacity:.4;padding:0 5px}.toastify-right{right:15px}.toastify-left{left:15px}.toastify-top{top:-150px}.toastify-bottom{bottom:-150px}.toastify-rounded{border-radius:25px}.toastify-avatar{width:1.5em;height:1.5em;margin:-7px 5px;border-radius:2px}.toastify-center{margin-left:auto;margin-right:auto;left:0;right:0;max-width:fit-content;max-width:-moz-fit-content}@media only screen and (max-width:360px){.toastify-left,.toastify-right{margin-left:auto;margin-right:auto;left:0;right:0;max-width:fit-content}}'
+chrome.action.onClicked.addListener((tab) => {
+  chrome.scripting.executeScript({
+    target: {tabId: tab.id},
+    files: ['js/content.js', 'js/jquery/jquery-1.12.4.js', 
+        'js/toastify/toastify.js']
+  });
+  chrome.scripting.insertCSS({
+    target: {tabId: tab.id},
+    css: css
+  })
+});
 
 function grayIconDataUri() {
   // return "data:image/png;base64,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"
@@ -24,7 +30,7 @@ function createSetIconAction(bytes, callback) {
 
 chrome.runtime.onInstalled.addListener(() => {
   // Page actions are disabled by default and enabled on select tabs
-  chrome.action.disable();
+//   chrome.action.disable();
 
   // chrome.action.setIcon({path: "icon.png" });
   // chrome.action.setBadgeText({
