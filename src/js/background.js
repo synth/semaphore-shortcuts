@@ -44,8 +44,10 @@ chrome.runtime.onInstalled.addListener(() => {
         {
           conditions : [
             new chrome.declarativeContent.PageStateMatcher({
-              // pageUrl : {queryContains : 'q1=green'}
-              pageUrl: {hostSuffix: '.semaphoreci.com'}
+              pageUrl: {
+                  hostSuffix: '.semaphoreci.com', 
+                  queryContains: 'pipeline_id'
+                }
             })
           ],
           actions    : [ new chrome.declarativeContent.ShowAction(), setIconAction ]
