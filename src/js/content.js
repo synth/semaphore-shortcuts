@@ -12,9 +12,9 @@ function init() {
       // $("#msg").html("<div>No Api key defined. Get your api token from <a href='https://me.semaphoreci.com/account' target='_blank'>your Semaphore account</a>. Then right click on the extension icon and go to options and enter your key.</div>");
       clearNotifications();
       notify({
-        text: "No Api key defined. Click this notification to go to your Semaphore account and get your API token. Then right click on the extension icon and go to options and enter your key.",
-        destination: 'https://me.semaphoreci.com/account',
-        newWindow: true
+        text: "No Api key defined. Click this notification to set it.",
+        destination: `chrome-extension://${chrome.runtime.id}/options.html`,
+        newWindow: true,
       })
     }
   });
@@ -69,16 +69,16 @@ async function makePipelineRebuildRequest(url, token) {
     // $("#msg").text("Successfully sent rebuild request");
     if (response.status >= 200 && response.status <= 299) {
       console.log(response);
-      $("#msg").text("Request sent successfully");
+      notify({text: "Request sent successfully"});
     } else {
       console.log(response);
       response.text().then(body => {
-        $("#msg").text(`Request failed with status ${response.status} ${response.statusText} ${body}`);
+        notify({text: `Request failed with status ${response.status} ${response.statusText} ${body}`});
       });
     }    
   }).catch(error => {
     console.log(error);
-    $("#msg").text(error);
+    notify({text: error});
   });
 }
 

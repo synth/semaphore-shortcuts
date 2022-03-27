@@ -16,5 +16,11 @@
   },
   "host_permissions": [
     "https://*.semaphore.com/"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [ "options.html" ],
+      "matches": ["<all_urls>"]
+    }
   ]
 }
