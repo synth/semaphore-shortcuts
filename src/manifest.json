@@ -2,6 +2,9 @@
   "name": "Semaphore Pipeline Rebuild",
   "version": "1.0",
   "manifest_version": 3,
+  "icons": {
+    "128": "assets/icon.png"
+  },
   "action": {
     "default_title": "Click to rebuild pipeline",
     "default_icon": "assets/icon-gray.png",
@@ -11,5 +14,8 @@
   "options_page": "options.html",
   "background": {
     "service_worker": "js/background.js" 
-  }
+  },
+  "host_permissions": [
+    "https://*.semaphore.com/"
+  ]
 }
