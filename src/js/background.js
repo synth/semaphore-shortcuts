@@ -1,331 +1,64 @@
-// Toaster: https://github.com/kvinbabbar/Pure-Javascript-Toaster-Plugin
+css = '.toastify{padding:12px 20px;color:#fff;display:inline-block;box-shadow:0 3px 6px -1px rgba(0,0,0,.12),0 10px 36px -4px rgba(77,96,232,.3);background:-webkit-linear-gradient(315deg,#73a5ff,#5477f5);background:linear-gradient(135deg,#73a5ff,#5477f5);position:fixed;opacity:0;transition:all .4s cubic-bezier(.215,.61,.355,1);border-radius:2px;cursor:pointer;text-decoration:none;max-width:calc(50% - 20px);z-index:2147483647}.toastify.on{opacity:1}.toast-close{opacity:.4;padding:0 5px}.toastify-right{right:15px}.toastify-left{left:15px}.toastify-top{top:-150px}.toastify-bottom{bottom:-150px}.toastify-rounded{border-radius:25px}.toastify-avatar{width:1.5em;height:1.5em;margin:-7px 5px;border-radius:2px}.toastify-center{margin-left:auto;margin-right:auto;left:0;right:0;max-width:fit-content;max-width:-moz-fit-content}@media only screen and (max-width:360px){.toastify-left,.toastify-right{margin-left:auto;margin-right:auto;left:0;right:0;max-width:fit-content}}'
 chrome.action.onClicked.addListener((tab) => {
-    chrome.scripting.executeScript({
-      target: {tabId: tab.id},
-      func: contentScriptFunc,
-      args: ['rebuild_pipeline'],
+  chrome.scripting.executeScript({
+    target: {tabId: tab.id},
+    files: ['js/content.js', 'js/jquery/jquery-1.12.4.js', 
+        'js/toastify/toastify.js']
+  });
+  chrome.scripting.insertCSS({
+    target: {tabId: tab.id},
+    css: css
+  })
+});
+
+function grayIconDataUri() {
+  // return "data:image/png;base64,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"
+  return [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 254, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 252, 252, 252, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 216, 216, 216, 255, 162, 162, 162, 255, 151, 151, 151, 255, 167, 167, 167, 255, 227, 227, 227, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 194, 194, 194, 255, 111, 111, 111, 255, 105, 105, 105, 255, 108, 108, 108, 255, 105, 105, 105, 255, 119, 119, 119, 255, 211, 211, 211, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 253, 253, 253, 255, 255, 255, 255, 255, 199, 199, 199, 255, 112, 112, 112, 255, 120, 120, 120, 255, 192, 192, 192, 255, 230, 230, 230, 255, 178, 178, 178, 255, 114, 114, 114, 255, 119, 119, 119, 255, 217, 217, 217, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 252, 252, 252, 255, 248, 248, 248, 255, 255, 255, 255, 255, 207, 207, 207, 255, 104, 104, 104, 255, 116, 116, 116, 255, 200, 200, 200, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 182, 182, 182, 255, 111, 111, 111, 255, 115, 115, 115, 255, 225, 225, 225, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 253, 253, 253, 255, 178, 178, 178, 255, 163, 163, 163, 255, 255, 255, 255, 255, 238, 238, 238, 255, 144, 144, 144, 255, 192, 192, 192, 255, 255, 255, 255, 255, 217, 217, 217, 255, 151, 151, 151, 255, 227, 227, 227, 255, 255, 255, 255, 255, 172, 172, 172, 255, 152, 152, 152, 255, 246, 246, 246, 255, 255, 255, 255, 255, 254, 254, 254, 255, 254, 254, 254, 255, 255, 255, 255, 255, 239, 239, 239, 255, 131, 131, 131, 255, 117, 117, 117, 255, 172, 172, 172, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 220, 220, 220, 255, 131, 131, 131, 255, 107, 107, 107, 255, 185, 185, 185, 255, 255, 255, 255, 255, 250, 250, 250, 255, 248, 248, 248, 255, 255, 255, 255, 255, 255, 255, 255, 255, 253, 253, 253, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 225, 225, 225, 255, 134, 134, 134, 255, 119, 119, 119, 255, 170, 170, 170, 255, 230, 230, 230, 255, 208, 208, 208, 255, 136, 136, 136, 255, 118, 118, 118, 255, 180, 180, 180, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 223, 223, 223, 255, 132, 132, 132, 255, 115, 115, 115, 255, 120, 120, 120, 255, 117, 117, 117, 255, 115, 115, 115, 255, 173, 173, 173, 255, 254, 254, 254, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 253, 253, 253, 255, 255, 255, 255, 255, 231, 231, 231, 255, 174, 174, 174, 255, 155, 155, 155, 255, 160, 160, 160, 255, 199, 199, 199, 255, 253, 253, 253, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 251, 251, 251, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 254, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255];
+}
+
+function iconDataBytes() {
+  // return "data:image/png;base64,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"
+  return [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 253, 254, 253, 255, 255, 254, 255, 255, 255, 255, 255, 255, 255, 254, 254, 255, 253, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 255, 255, 255, 255, 254, 254, 255, 255, 255, 255, 255, 254, 255, 255, 255, 249, 253, 252, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 255, 254, 255, 255, 254, 254, 255, 255, 255, 255, 255, 189, 222, 214, 255, 102, 175, 152, 255, 82, 165, 137, 255, 112, 179, 159, 255, 205, 232, 226, 255, 255, 255, 255, 255, 254, 254, 254, 255, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 255, 255, 254, 254, 255, 254, 255, 255, 255, 255, 254, 255, 255, 255, 255, 255, 255, 153, 203, 189, 255, 0, 131, 87, 255, 0, 125, 78, 255, 0, 128, 84, 255, 0, 125, 76, 255, 0, 138, 99, 255, 180, 219, 208, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 253, 252, 255, 255, 255, 255, 255, 162, 207, 195, 255, 0, 131, 87, 255, 0, 138, 98, 255, 153, 201, 188, 255, 210, 235, 232, 255, 130, 189, 171, 255, 0, 133, 90, 255, 0, 138, 98, 255, 187, 224, 214, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 255, 255, 255, 255, 255, 253, 252, 250, 255, 251, 248, 244, 255, 255, 255, 255, 255, 178, 214, 204, 255, 0, 126, 77, 255, 0, 135, 93, 255, 163, 209, 196, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 132, 193, 175, 255, 0, 131, 87, 255, 0, 135, 94, 255, 206, 230, 225, 255, 255, 255, 255, 255, 253, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 253, 251, 255, 242, 161, 144, 255, 236, 141, 119, 255, 255, 255, 253, 255, 222, 242, 239, 255, 69, 159, 130, 255, 156, 201, 188, 255, 255, 255, 255, 255, 248, 210, 200, 255, 232, 125, 98, 255, 251, 221, 214, 255, 254, 255, 255, 255, 119, 183, 163, 255, 81, 167, 142, 255, 237, 247, 246, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 254, 254, 255, 255, 255, 255, 255, 252, 236, 230, 255, 237, 91, 48, 255, 240, 61, 0, 255, 240, 152, 132, 255, 255, 255, 254, 255, 249, 255, 255, 255, 255, 255, 255, 255, 248, 213, 204, 255, 237, 91, 53, 255, 238, 35, 0, 255, 237, 171, 155, 255, 255, 255, 255, 255, 244, 251, 250, 255, 239, 251, 248, 255, 255, 255, 255, 255, 254, 255, 254, 255, 253, 253, 253, 255, 255, 255, 255, 255, 255, 254, 254, 255, 255, 255, 255, 255, 249, 220, 211, 255, 238, 95, 59, 255, 239, 66, 0, 255, 240, 150, 130, 255, 252, 225, 218, 255, 247, 198, 187, 255, 239, 98, 63, 255, 240, 62, 0, 255, 243, 162, 143, 255, 255, 255, 252, 255, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 255, 255, 255, 255, 255, 248, 218, 208, 255, 237, 93, 54, 255, 239, 55, 0, 255, 238, 68, 0, 255, 239, 62, 0, 255, 238, 57, 0, 255, 240, 154, 135, 255, 255, 254, 251, 255, 255, 255, 255, 255, 255, 254, 254, 255, 254, 255, 255, 255, 254, 255, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 253, 253, 255, 255, 255, 255, 255, 250, 226, 219, 255, 243, 153, 134, 255, 245, 126, 102, 255, 244, 133, 111, 255, 245, 187, 173, 255, 255, 253, 251, 255, 255, 255, 255, 255, 254, 254, 253, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 250, 249, 255, 255, 254, 252, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 255, 255, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 255, 255, 255, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255];
+}
+
+function createSetIconAction(bytes, callback) {
+  let byteArray = new Uint8ClampedArray(bytes);
+  let imageData = new ImageData(byteArray, 19,19);
+  var action = new chrome.declarativeContent.SetIcon({imageData: imageData});
+  callback(action);
+}
+
+chrome.runtime.onInstalled.addListener(() => {
+  // Page actions are disabled by default and enabled on select tabs
+//   chrome.action.disable();
+
+  // chrome.action.setIcon({path: "icon.png" });
+  // chrome.action.setBadgeText({
+  //   text: ('foo')
+  // });  
+  // chrome.action.setBadgeBackgroundColor({
+  //   color: '#ccc'
+  // });
+  // chrome.action.setIcon({
+  //   path: iconDataUri()
+  // });  
+
+  // Clear all rules to ensure only our expected rules are set
+  chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
+    createSetIconAction(iconDataBytes(), function(setIconAction) {
+      chrome.declarativeContent.onPageChanged.addRules([
+        {
+          conditions : [
+            new chrome.declarativeContent.PageStateMatcher({
+              pageUrl: {
+                  hostSuffix: '.semaphoreci.com', 
+                  queryContains: 'pipeline_id'
+                }
+            })
+          ],
+          actions    : [ new chrome.declarativeContent.ShowAction(), setIconAction ]
+        }
+      ]);        
     });
   });
-  
-  function contentScriptFunc(name) {
-    let ToasterBox;
-    let queryParams = new URLSearchParams(window.location.search);
-    let pipelineId = queryParams.get('pipeline_id');
-    let commandStr = `sem rebuild pipeline ${pipelineId}`;
-
-    function loadNotificationLibraryStyles() {
-      var sheet = document.createElement('style');
-      sheet.innerHTML = `/* The toaster - position it at the bottom and in the middle of the screen */
-      .inverted {
-          -webkit-filter: invert(1);
-          filter: invert(1);
-      }
-      .toaster-container {
-          max-width: 450px;
-          min-width: 250px;
-          /* Set a default minimum width */
-          background-color: #000033;
-          /* Black background color */
-          color: #fff;
-          /* White text color */
-          border-radius: 2px;
-          /* Rounded borders */
-          padding: 16px;
-          /* Padding */
-          position: absolute;
-          /* Sit on top of the screen */
-          z-index: 1;
-          /* Add a z-index if needed */
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          box-shadow: 0px 13px 10px -7px rgba(0, 0, 0, 0.1);
-          width: 100%;
-          font-family: inherit;
-      }
-      .toaster-container.top-right {
-          right: 1%;
-          top: 30px;
-      }
-      .toaster-container.top-left {
-          left: 1%;
-          top: 30px;
-      }
-      .toaster-container.top-center {
-          left: 50%;
-          transform: translateX(-50%);
-          top: 30px;
-      }
-      .toaster-container.bottom-center {
-          left: 50%;
-          transform: translateX(-50%);
-          bottom: 30px;
-      }
-      .toaster-container.bottom-left {
-          left: 1%;
-          bottom: 30px;
-      }
-      .toaster-container.bottom-right {
-          right: 1%;
-          bottom: 30px;
-      }
-      .toaster-container.top-right,
-      .toaster-container.top-left,
-      .toaster-container.top-center {
-          -webkit-animation: fadeinTop 0.5s;
-          animation: fadeinTop 0.5s;
-      }
-      .toaster-container.bottom-right,
-      .toaster-container.bottom-left,
-      .toaster-container.bottom-center {
-          -webkit-animation: fadeinBottom 0.5s;
-          animation: fadeinBottom 0.5s;
-      }
-      .toaster-close {
-          font-size: 20px;
-          background-color: transparent;
-          border: none;
-          color: #fff;
-          outline: none;
-      }
-      /* Animations to fade the snackbar in and out from top */
-      @-webkit-keyframes fadeinTop {
-          from {
-              top: 0;
-              opacity: 0;
-          }
-          to {
-              top: 30px;
-              opacity: 1;
-          }
-      }
-      @keyframes fadeinTop {
-          from {
-              top: 0;
-              opacity: 0;
-          }
-          to {
-              top: 30px;
-              opacity: 1;
-          }
-      }
-      
-      @-webkit-keyframes fadeoutTop {
-          from {
-              top: 30px;
-              opacity: 1;
-          }
-          to {
-              top: 0;
-              opacity: 0;
-          }
-      }
-      @keyframes fadeoutTop {
-          from {
-              top: 30px;
-              opacity: 1;
-          }
-          to {
-              top: 0;
-              opacity: 0;
-          }
-      }
-      /* Animations to fade the snackbar in and out from bottom */
-      @-webkit-keyframes fadeinBottom {
-          from {
-              bottom: 0;
-              opacity: 0;
-          }
-          to {
-              bottom: 30px;
-              opacity: 1;
-          }
-      }
-      @keyframes fadeinBottom {
-          from {
-              bottom: 0;
-              opacity: 0;
-          }
-          to {
-              bottom: 30px;
-              opacity: 1;
-          }
-      }
-      
-      @-webkit-keyframes fadeoutBottom {
-          from {
-              bottom: 30px;
-              opacity: 1;
-          }
-          to {
-              bottom: 0;
-              opacity: 0;
-          }
-      }
-      @keyframes fadeoutBottom {
-          from {
-              bottom: 30px;
-              opacity: 1;
-          }
-          to {
-              bottom: 0;
-              opacity: 0;
-          }
-      }`;
-      document.body.appendChild(sheet);
-    }
-    function loadNotificationLibrary() {
-        var ToasterBox = function() {
-            
-            // globel variable
-            this.toasterContainer = null;
-            this.toasterCloseBtn = null;
-            const _ = this;
-    
-            let defaults = {
-                msg: '',
-                duration: 3000,
-                html: false,
-                className: null,
-                closeButton: true,
-                maxWidth: 450,
-                autoOpen: true,
-                position: 'bottom-center', //'top-left', 'top-center', 'top-right', 'bottom-left', 'bottom-center', 'bottom-right', 
-                backgroundColor: null,
-                closeIcon: null
-            }
-    
-            if(arguments[0] && typeof arguments[0] === "object") {
-                this.options = extendDefaults(defaults, arguments[0]);
-            }
-            if(this.options.autoOpen) {
-                _.openToaster();
-            }
-            setTimeout(function () { _.closeToaster() }, Number(this.options.duration));
-        }
-    
-        ToasterBox.prototype.openToaster = function() {
-            // build out toaster
-            buildToaster.call(this)
-            // Initialize Event Listeners
-            initializeEvents.call(this);
-            /*
-            * After adding elements to the DOM, use getComputedStyle
-            * to force the browser to recalc and recognize the elements
-            * that we just added. This is so that CSS animation has a start point
-            */
-            window.getComputedStyle(this.toasterContainer).height;
-        }
-    
-        ToasterBox.prototype.closeToaster = function() {
-            const _ = this;
-            if(_.toasterContainer.classList.contains('top-left') || 
-            _.toasterContainer.classList.contains('top-center') || 
-            _.toasterContainer.classList.contains('top-right')) {
-                _.toasterContainer.style.webkitAnimation = "fadeoutTop .5s";
-                _.toasterContainer.style.animation = "fadeoutTop .5s";
-            }
-            if(_.toasterContainer.classList.contains('bottom-left') || 
-            _.toasterContainer.classList.contains('bottom-center') || 
-            _.toasterContainer.classList.contains('bottom-right')) {
-                _.toasterContainer.style.webkitAnimation = "fadeoutBottom .5s";
-                _.toasterContainer.style.animation = "fadeoutBottom .5s";
-            }
-            // Code for Safari 3.1 to 6.0
-            _.toasterContainer.addEventListener("webkitAnimationend", function() {
-                _.toasterContainer.remove();
-            });
-    
-            // Standard syntax
-            _.toasterContainer.addEventListener("animationend", function() {
-                _.toasterContainer.remove();
-            });
-        }
-        
-        // build toaster
-        function buildToaster() {
-            var docFrag, toasterMsg;
-            
-            this.toasterContainer = document.createElement('div');
-            this.toasterContainer.classList.add('toaster-container');
-            this.toasterContainer.classList.add(this.options.position);
-            this.toasterContainer.style.maxWidth = this.options.maxWidth + 'px';
-            if(this.options.backgroundColor !== null) {
-                this.toasterContainer.style.backgroundColor = this.options.backgroundColor;
-            }
-            if(this.options.className !== null) {
-                this.toasterContainer.classList.add(this.options.className);
-            }
-            // toaster message
-            toasterMsg = document.createElement('span');
-            toasterMsg.classList.add(`toaster-msg`);
-            if(!this.options.html) {
-                toasterMsg.innerText = this.options.msg;
-            } else {
-                toasterMsg.innerHTML = this.options.msg;
-            }
-            // append toaster message to container
-            this.toasterContainer.append(toasterMsg);
-            // close button
-            if(this.options.closeButton) {
-                this.toasterCloseBtn = document.createElement('button');
-                this.toasterCloseBtn.setAttribute('type','button');
-                this.toasterCloseBtn.classList.add(`toaster-close`);
-                if(this.options.closeIcon) {
-                    this.toasterCloseBtn.innerHTML = this.options.closeIcon;
-                } else {
-                    this.toasterCloseBtn.innerHTML = "<img src='./close.svg' alt='close icon' width='20' class='inverted'/>";
-                }
-                this.toasterContainer.append(this.toasterCloseBtn);
-            }
-            // create document fragment and append toaster to it
-            docFrag = document.createDocumentFragment();
-            docFrag.append(this.toasterContainer)
-            // append Doc Fragment to body
-            document.body.append(docFrag);
-        }
-    
-        function initializeEvents() {
-            if(this.toasterCloseBtn) {
-                this.toasterCloseBtn.addEventListener('click', this.closeToaster.bind(this));
-            }
-        }
-        // overwrite default property
-        function extendDefaults(source, properties) {
-            let property;
-            for(property in properties) {
-                if(properties.hasOwnProperty(property)) {
-                    source[property] = properties[property];
-                }
-            }
-            return source;
-        }
-      return ToasterBox;
-    }
-
-    function notify(title, msg, duration = 3000) {
-      new ToasterBox({ msg : msg, closeButton : false, duration: duration });
-    }
-
-    loadNotificationLibraryStyles();
-    ToasterBox = loadNotificationLibrary();
-    if(pipelineId) {
-        navigator.clipboard.writeText(commandStr).then(() => {
-            console.log('clipboard set')
-            notify("Semaphore Rebuild", `Command has been copied to clipboard: "${commandStr}"`);
-        }, (error) => {
-            notify("Semaphore Rebuild", 'Failed setting clipboard: '+error+'\nCommand: '+commandStr, 10000)
-            console.log('Failed setting clipboard: '+error);
-            console.log('Here\'s the command: '+commandStr);
-        })
-    } else {
-        console.log("No pipeline id in query parameters, so nothing to do...")
-    }
-  }
-
-
-  // This callback WILL NOT be called for "_execute_action"
-  chrome.commands.onCommand.addListener((command) => {
-    console.log(`Command: sem rebuild pipeline "${command}"`);
-  });
-
+});
