@@ -1,7 +1,7 @@
 # Semaphore Shortcuts
 This chrome extension allows for shortcuts with SemaphoreCI. This was inspred by the tutorial corresponding with this repo [here](https://www.blog.karenying.com/posts/hack-keyboard-shortcuts-into-sites-with-a-custom-chrome-extension).
 
-Primarily this copies the "sem rebuild pipeline <pipeline_id>" to your clipboard. You must be on a workflow run page for this to work. 
+Primarily this copies the "sem rebuild pipeline <pipeline_id>" to your clipboard. You must be on a workflow run page for this to work...
 
 
 ## Installation
