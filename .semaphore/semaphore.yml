@@ -56,8 +56,6 @@ blocks:
       env_vars:
         - name: ENABLE_RETRY
           value: "true"
-      secrets:
-        - name: test-credentials
       prologue:
         commands:
           - sem-version node 14.15.0
