@@ -1,0 +1,76 @@
+# Use the latest stable version of Semaphore 2.0 YML syntax:
+version: v1.0
+
+# Name your pipeline. In case you connect multiple pipelines with promotions,
+# the name will help you differentiate between, for example, a CI build phase
+# and delivery phases.
+name: Unit Tests
+
+# An agent defines the environment in which your code runs.
+# It is a combination of one of available machine types and operating
+# system images.
+# See https://docs.semaphoreci.com/article/20-machine-types
+# and https://docs.semaphoreci.com/article/32-ubuntu-1804-image
+agent:
+  machine:
+    type: e1-standard-4
+    os_image: ubuntu1804
+
+auto_cancel:
+  running:
+    when: "true"
+
+global_job_config:
+  prologue:
+    commands:
+      # Checkout code from Git repository. This step is mandatory if the
+      # job is to work with your code.
+      # Optionally you may use --use-cache flag to avoid roundtrip to
+      # remote repository.
+      # See https://docs.semaphoreci.com/article/54-toolbox-reference#checkout
+      - checkout
+      # Restore dependencies from cache.
+      # Read about caching: https://docs.semaphoreci.com/article/149-caching
+      - cache restore
+
+
+# Blocks are the heart of a pipeline and are executed sequentially.
+# Each block has a task that defines one or more jobs. Jobs define the
+# commands to execute.
+# See https://docs.semaphoreci.com/article/62-concepts
+blocks:
+  - name: Setup
+    dependencies: []
+    task:
+      jobs:
+        - name: bundle
+          commands:
+          # Store the latest version of dependencies in cache,
+          # to be used in next blocks and future workflows:
+          - cache store
+
+  - name: Test1
+    dependencies:
+      - Setup
+    task:
+      env_vars:
+        - name: ENABLE_RETRY
+          value: "true"
+      secrets:
+        - name: test-credentials
+      prologue:
+        commands:
+          - sem-version node 14.15.0
+
+      jobs:
+      - name: Spec 1
+        commands:
+          - echo "spec 1"
+
+
+
+
+
+
+
+
