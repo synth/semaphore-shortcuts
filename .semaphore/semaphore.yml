@@ -13,6 +13,7 @@ name: Unit Tests
 # and https://docs.semaphoreci.com/article/32-ubuntu-1804-image
 agent:
   machine:
+    type: e1-standard-2
     os_image: ubuntu1804
 
 auto_cancel:
