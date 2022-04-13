@@ -44,42 +44,46 @@ function setup() {
 }
 
 async function runPipelineRebuild(apiToken) {
-  getTabUrl().then(url => {
-    let parsedUrl = new URL(url);
-    let host = parsedUrl.host;
-    let queryParams = new URLSearchParams(parsedUrl.search);
-    let pipelineId = queryParams.get('pipeline_id');
-    let apiBaseUrl = `https://${host}/api/v1alpha`;
-    let requestToken = createUUID();
-    let apiUrl = `${apiBaseUrl}/pipelines/${pipelineId}/partial_rebuild?request_token=${requestToken}`;
-    // let apiUrl = `${apiBaseUrl}/pipelines/${pipelineId}/partial_rebuild`;
-    makePipelineRebuildRequest(apiUrl, apiToken);
-    // $("#msg").text(apiUrl);
+  getUrl().then(url => {
+    if(url) {
+      let parsedUrl = new URL(url);
+      let host = parsedUrl.host;
+      let queryParams = new URLSearchParams(parsedUrl.search);
+      let pipelineId = queryParams.get('pipeline_id');
+      let apiBaseUrl = `https://${host}/api/v1alpha`;
+      let requestToken = createUUID();
+      let apiUrl = `${apiBaseUrl}/pipelines/${pipelineId}/partial_rebuild?request_token=${requestToken}`;
+      // let apiUrl = `${apiBaseUrl}/pipelines/${pipelineId}/partial_rebuild`;
+      makePipelineRebuildRequest(apiUrl, apiToken);
+      // $("#msg").text(apiUrl);
+
+    } else {
+      notify({text: 'Could not get Pipeline URL'});
+    }
   })
 }
 
 async function makePipelineRebuildRequest(url, token) {
-  console.log("Making pipeline rebuild request");
-  fetch(url, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Token ${token}`
-    }
-  }).then(response => {
-    // $("#msg").text("Successfully sent rebuild request");
-    if (response.status >= 200 && response.status <= 299) {
-      console.log(response);
-      notify({text: "Request sent successfully"});
-    } else {
-      console.log(response);
-      response.text().then(body => {
-        notify({text: `Request failed with status ${response.status} ${response.statusText} ${body}`});
-      });
-    }    
-  }).catch(error => {
-    console.log(error);
-    notify({text: error});
-  });
+  chrome.runtime.sendMessage(
+    {contentScriptQuery: "makePipelineRebuildRequest", url: url, token: token}, function(response){
+      notify(response);
+    });
+}
+
+async function getUrl() {
+  let tabUrl = await getTabUrl();
+
+  if(tabUrl.match(/semaphoreci.com/)) {
+    return getTabUrl();
+  } else {
+    return getSemaphorePipelineUrlFromGithub();
+  }
+}
+
+async function getSemaphorePipelineUrlFromGithub() {
+  let statusActions = document.getElementsByClassName("status-actions");
+  let semStatusAction = Array.from(statusActions).filter(elem => elem.href.match(/semaphoreci.com\/workflows.*pipeline_id/))[0];
+  return semStatusAction.href;
 }
 
 async function getTabUrl() {

@@ -15,7 +15,9 @@
     "service_worker": "js/background.js" 
   },
   "host_permissions": [
-    "https://*.semaphore.com/"
+    "https://*.semaphore.com/*",
+    "https://*.semaphoreci.com/*",
+    "https://*.github.com/*"
   ],
   "web_accessible_resources": [
     {

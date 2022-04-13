@@ -54,6 +54,12 @@ chrome.runtime.onInstalled.addListener(() => {
                   hostSuffix: '.semaphoreci.com', 
                   queryContains: 'pipeline_id'
                 }
+            }),
+            new chrome.declarativeContent.PageStateMatcher({
+              pageUrl: {
+                  hostSuffix: '.github.com', 
+                  pathContains: 'pull/'
+                }
             })
           ],
           actions    : [ new chrome.declarativeContent.ShowAction(), setIconAction ]
@@ -61,4 +67,32 @@ chrome.runtime.onInstalled.addListener(() => {
       ]);        
     });
   });
+});
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  if (request.contentScriptQuery == "makePipelineRebuildRequest") {
+    let url = request.url;
+    let token = request.token;
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Token ${token}`
+      }
+    }).then(response => {
+      // $("#msg").text("Successfully sent rebuild request");
+      if (response.status >= 200 && response.status <= 299) {
+        console.log(response);
+        sendResponse({text: "Request sent successfully"})
+      } else {
+        console.log(response);
+        response.text().then(body => {
+          sendResponse({text: `Request failed with status ${response.status} ${response.statusText} ${body}`});
+        });
+      }    
+    }).catch(error => {
+      console.log(error);
+      sendResponse({text: error});
+    });
+  }
+  return true;
 });
